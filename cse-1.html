@@ -3,87 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QR Scanner + Video Autoplay</title>
-
-    <!-- html5-qrcode library -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <title>Fullscreen Mobile Video</title>
 
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin-top: 20px;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
-      #reader {
-        width: 320px;
-        margin: auto;
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: black;
       }
 
       video {
-        margin-top: 20px;
-        display: none;
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover; /* fills full mobile screen */
+        display: block;
+        background: black;
       }
     </style>
   </head>
   <body>
-   
-  
-
-    <!-- QR Scanner Camera -->
-    <div id="reader"></div>
-
-    <!-- Video -->
-    <video id="myVideo" width="500" height="500" controls>
+    <video id="myVideo" autoplay playsinline controls>
       <source src="./CSE-1.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
     </video>
 
     <script>
-      const qrScanner = new Html5Qrcode("reader");
+      const video = document.getElementById("myVideo");
 
-      function onScanSuccess(decodedText, decodedResult) {
-        console.log("QR Code scanned:", decodedText);
-
-        // Stop scanner after successful scan
-        qrScanner
-          .stop()
-          .then(() => {
-            document.getElementById("reader").style.display = "none";
-
-            // Play video automatically with sound
-            const video = document.getElementById("myVideo");
-            video.style.display = "block";
-            video.muted = false;
-            video.volume = 1.0;
-
-            video.play().catch((err) => {
-              console.log("Playback failed:", err);
-            });
-          })
-          .catch((err) => {
-            console.log("Scanner stop failed:", err);
-          });
-      }
-
-      function onScanFailure(error) {
-        // Ignore scan errors continuously
-      }
-
-      // Start camera scanner
-      qrScanner
-        .start(
-          { facingMode: "environment" }, // back camera
-          {
-            fps: 10,
-            qrbox: 250,
-          },
-          onScanSuccess,
-          onScanFailure,
-        )
-        .catch((err) => {
-          console.log("Camera start failed:", err);
-        });
+      // Try autoplay with sound
+      window.addEventListener("load", async () => {
+        try {
+          video.muted = false;
+          video.volume = 1.0;
+          await video.play();
+        } catch (err) {
+          console.log("Autoplay with sound blocked:", err);
+        }
+      });
     </script>
-
   </body>
 </html>
