@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Scanner + Video Autoplay</title>
+
+    <!-- html5-qrcode library -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      #reader {
+        width: 320px;
+        margin: auto;
+      }
+
+      video {
+        margin-top: 20px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+   
+    <center>
+
+    <!-- QR Scanner Camera -->
+    <div id="reader"></div>
+
+    <!-- Video -->
+    <video id="myVideo" width="500" height="500" controls>
+      <source src="./CSE-1.mp4" type="video/mp4" />
+    </video>
+
+    <script>
+      const qrScanner = new Html5Qrcode("reader");
+
+      function onScanSuccess(decodedText, decodedResult) {
+        console.log("QR Code scanned:", decodedText);
+
+        // Stop scanner after successful scan
+        qrScanner
+          .stop()
+          .then(() => {
+            document.getElementById("reader").style.display = "none";
+
+            // Play video automatically with sound
+            const video = document.getElementById("myVideo");
+            video.style.display = "block";
+            video.muted = false;
+            video.volume = 1.0;
+
+            video.play().catch((err) => {
+              console.log("Playback failed:", err);
+            });
+          })
+          .catch((err) => {
+            console.log("Scanner stop failed:", err);
+          });
+      }
+
+      function onScanFailure(error) {
+        // Ignore scan errors continuously
+      }
+
+      // Start camera scanner
+      qrScanner
+        .start(
+          { facingMode: "environment" }, // back camera
+          {
+            fps: 10,
+            qrbox: 250,
+          },
+          onScanSuccess,
+          onScanFailure,
+        )
+        .catch((err) => {
+          console.log("Camera start failed:", err);
+        });
+    </script>
+    </center>
+  </body>
+</html>
